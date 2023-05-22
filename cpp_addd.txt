@@ -1,0 +1,48 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+// 示例电路 (3-input AND gate)
+bool and_gate(bool A, bool B, bool C) {
+    return A && B && C;
+}
+
+int main() {
+    // 故障注入
+    std::string faulty_node = "B"; // 假设故障发生在输入端口B
+    bool stuck_value = false;      // 假设B始终为0
+
+    // 测试向量生成
+    std::vector<std::vector<bool>> test_vectors = {
+        {false, false, false}, {false, false, true}, {false, true, false},
+        {false, true, true}, {true, false, false}, {true, false, true},
+        {true, true, false}, {true, true, true}};
+
+    // 故障诊断
+    for (const auto &test_vector : test_vectors) {
+        bool A = test_vector[0];
+        bool B = test_vector[1];
+        bool C = test_vector[2];
+
+        // 注入故障
+        if (faulty_node == "A") {
+            A = stuck_value;
+        } else if (faulty_node == "B") {
+            B = stuck_value;
+        } else if (faulty_node == "C") {
+            C = stuck_value;
+        }
+
+        // 计算输出
+        bool Y_normal = and_gate(A, B, C);
+        bool Y_faulty = and_gate(A, stuck_value, C);
+
+        // 对比输出
+        if (Y_normal != Y_faulty) {
+            std::cout << "故障在 " << faulty_node << " 节点被检测到, 当输入为 ["
+                      << A << ", " << B << ", " << C << "] 时." << std::endl;
+        }
+    }
+
+    return 0;
+}
