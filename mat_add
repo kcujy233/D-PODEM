@@ -1,0 +1,35 @@
+% 示例电路 (3-input AND gate)
+% 输入：A, B, C
+% 输出：Y = A * B * C
+
+% 故障注入
+faulty_node = 'B'; % 假设故障发生在输入端口B
+stuck_value = 0;   % 假设B始终为0
+
+% 测试向量生成
+test_vectors = [0 0 0; 0 0 1; 0 1 0; 0 1 1; 1 0 0; 1 0 1; 1 1 0; 1 1 1];
+
+% 故障诊断
+for i = 1:size(test_vectors, 1)
+    A = test_vectors(i, 1);
+    B = test_vectors(i, 2);
+    C = test_vectors(i, 3);
+
+    % 注入故障
+    if strcmp(faulty_node, 'A')
+        A = stuck_value;
+    elseif strcmp(faulty_node, 'B')
+        B = stuck_value;
+    elseif strcmp(faulty_node, 'C')
+        C = stuck_value;
+    end
+    
+    % 计算输出
+    Y_normal = and(and(A, B), C);
+    Y_faulty = and(and(A, stuck_value), C);
+
+    % 对比输出
+    if Y_normal ~= Y_faulty
+        fprintf('故障在 %s 节点被检测到, 当输入为 [%d, %d, %d] 时.\n', faulty_node, A, B, C);
+    end
+end

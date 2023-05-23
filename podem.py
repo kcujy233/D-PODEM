@@ -1,5 +1,10 @@
 input_values = []
 assigned = []
+def print_test_vector(input_values):
+    relevant_inputs = [input_values[0], input_values[1]]
+    print("Test vector found:", relevant_inputs)
+
+
 def podem(gates, fault_gate, fault_line, fault_value):
     global assigned
     global input_values
@@ -17,8 +22,9 @@ def podem(gates, fault_gate, fault_line, fault_value):
 
     # 执行算法
     if recursive_backtrack(gates, fault_gate, fault_line, fault_value):
-        print("Test vector found:")
-        print(input_values)
+        # print("Test vector found:")
+        # print(input_values)
+        print_test_vector(input_values)
     else:
         print("No test vector found.")
 
@@ -72,22 +78,24 @@ def check_and_propagate(gates, fault_gate, fault_line, fault_value):
     else:
         return input_values[-1] != 0, gates
 #这个电路包含两个AND门和一个OR门。类型为1的门表示AND门，类型为2的门表示OR门。input1和input2是每个门的输入线序号，output是输出线序号。
-# gates = [
-#     {"type": 1, "input1": 0, "input2": 1, "output": 3},
-#     {"type": 1, "input1": 2, "input2": 3, "output": 4},
-#     {"type": 2, "input1": 1, "input2": 4, "output": 5}
-# ]
-# fault_gate = 1
-# fault_line = 4
-# fault_value = 1
-#这个电路包含一个AND门（类型：1）和一个OR门（类型：2）。输入线有2条（编号0和1），输出线有1条（编号3）。
-#我们需要扩展input_values和assigned数组的长度。它们的长度应该等于最大线序号加1，以确保所有线都能得到表示。在此示例中，最大线序号为3，因此数组长度应为4。
 gates = [
-    {"type": 1, "input1": 0, "input2": 1, "output": 2},
-    {"type": 2, "input1": 0, "input2": 2, "output": 3}
+    {"type": 1, "input1": 0, "input2": 1, "output": 3},
+    {"type": 1, "input1": 2, "input2": 3, "output": 4},
+    {"type": 2, "input1": 1, "input2": 4, "output": 5}
 ]
-fault_gate = 0
-fault_line = 2
+fault_gate = 1
+fault_line = 4
 fault_value = 1
+#这个电路包含一个AND门（类型：1）和一个OR门（类型：2）。输入线有2条（编号0和1），输出线有1条（编号3）。
 
+# gates = [
+#     {"type": 1, "input1": 0, "input2": 1, "output": 2},
+#     {"type": 2, "input1": 0, "input2": 2, "output": 3}
+# ]
+# fault_gate = 0
+# fault_line = 2
+# fault_value = 1
+# fault_gate = 1
+# fault_line = 3
+# fault_value = 0
 podem(gates, fault_gate, fault_line, fault_value)

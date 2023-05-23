@@ -1,0 +1,36 @@
+matlab
+% D Algorithm Example for a simple digital system with 3 inputs and 1 output
+
+% Fault-Free System Function
+function Y = system_function(A, B, C)
+    Y = A & (B | C);
+end
+
+% Test Vectors Generation
+test_vectors = dec2bin(0:7) - '0'; % Generate all input combinations (000 to 111)
+
+% Apply Test Vectors and Check Output 
+for i = 1:size(test_vectors, 1)
+    A = test_vectors(i, 1);
+    B = test_vectors(i, 2);
+    C = test_vectors(i, 3);
+    
+    expected_output = system_function(A, B, C);
+    
+    % Simulate Faulty AND Gate with Stuck-at-0 fault
+    faulty_output_0 = (~A) & (B | C);
+    
+    % Simulate Faulty AND Gate with Stuck-at-1 fault
+    faulty_output_1 = A | (B | C);
+    
+    fprintf('Test Vector: %d%d%d | Expected Output: %d | Faulty Output (Stuck-at-0): %d | Faulty Output (Stuck-at-1): %d\n', A, B, C, expected_output, faulty_output_0, faulty_output_1);
+    
+    % Fault Diagnosis
+    if expected_output ~= faulty_output_0
+        fprintf('Fault detected: AND gate stuck-at-0\n');
+    end
+    
+    if expected_output ~= faulty_output_1
+        fprintf('Fault detected: AND gate stuck-at-1\n');
+    end
+end
