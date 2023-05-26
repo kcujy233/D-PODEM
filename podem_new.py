@@ -1,86 +1,44 @@
-import copy
-
-def initialize_circuit(gates):
-    max_line = max([max(gate.values()) for gate in gates])
-    return {i: None for i in range(max_line + 1)}
-
-def propagate_fault(circuit, fault_line, fault_value):
-    circuit[fault_line] = fault_value
-
-def is_fault_detected(circuit):
-    return circuit[3] is not None
-
-def extract_test_vector(circuit):
-    return (circuit[0], circuit[1])
-
-def objective(circuit, fault_value):
-    if circuit[2] is None:
-        if fault_value == 1:
-            return 1, 1
-        else:  # fault value is 0
-            return 0, 1
-    else:
-        return None, None
-
-def backtrace(node, value):
-    if node == 0 or node == 1:
-        for v in (0, 1):  # For this simple example, we just yield the target values
-            yield v
-
-def simulate(circuit, gates):
+def propagate_value(gates, values):
+    new_values = values.copy()
     for gate in gates:
-        input1 = circuit[gate["input1"]]
-        input2 = circuit[gate["input2"]]
+        input1_value = new_values[gate["input1"]]
+        input2_value = new_values[gate["input2"]]
+        
+        if gate["type"] == 1:  # AND gate
+            result = input1_value and input2_value
+        elif gate["type"] == 2:  # OR gate
+            result = input1_value or input2_value
+        
+        new_values[gate["output"]] = result
+    
+    return new_values
 
-        if input1 is not None and input2 is not None:
-            if gate["type"] == 1:  # AND gate
-                circuit[gate["output"]] = input1 & input2
-            elif gate["type"] == 2:  # OR gate
-                circuit[gate["output"]] = input1 | input2
+def find_test_vectors(gates, fault_gate, fault_line, fault_value):
+    test_vectors = []
 
-def backtrack(circuit, node, backtrace_val):
-    circuit[node] = None
+    for i1 in [0, 1]:
+        for i2 in [0, 1]:
+            input_values = {0: i1, 1: i2}
+            good_circuit_values = propagate_value(gates, input_values)
+            
+            faulty_gates = gates.copy()
+            faulty_gates[fault_gate] = faulty_gates[fault_gate].copy()
+            faulty_gates[fault_gate][fault_line] = fault_value
+            
+            faulty_circuit_values = propagate_value(faulty_gates, input_values)
+            
+            if good_circuit_values != faulty_circuit_values:
+                test_vectors.append((i1, i2))
+    
+    return test_vectors
 
-def podem(gates, fault_line, fault_value, circuit=None):
-    if circuit is None:
-        circuit = initialize_circuit(gates)
-        propagate_fault(circuit, fault_line, fault_value)
+gates = [
+    {"type": 1, "input1": 0, "input2": 1, "output": 2},
+    {"type": 2, "input1": 0, "input2": 2, "output": 3}
+]
+fault_gate = 1
+fault_line = "input2"
+fault_value = 1
 
-    if is_fault_detected(circuit):
-        return extract_test_vector(circuit)
-
-    node, value = objective(circuit, fault_value)
-    if node is None:
-        return None
-
-    for backtrace_val in backtrace(node, value):
-        if backtrace_val is None:
-            continue
-
-        circuit_copy = copy.deepcopy(circuit)
-        circuit_copy[node] = backtrace_val
-
-        simulate(circuit_copy, gates)
-
-        result = podem(gates, fault_line, fault_value, circuit_copy)
-        if result is not None:
-            return result
-
-        backtrack(circuit, node, backtrace_val)
-
-    return None
-
-def main():
-    gates = [
-        {"type": 1, "input1": 0, "input2": 1, "output": 2},
-        {"type": 2, "input1": 0, "input2": 2, "output": 3}
-    ]
-
-    fault_line = 2
-    fault_value = 1  # stuck-at-1 fault
-
-    test_vector = podem(gates, fault_line, fault_value)
-    print("Test vector:", test_vector)
-
-if __name__ == "__main__":
-    main()
+test_vectors = find_test_vectors(gates, fault_gate, fault_line, fault_value)
+print("All possible test vectors:", test_vectors)
