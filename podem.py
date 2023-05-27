@@ -71,23 +71,23 @@ def recursive_backtrack(gates, fault_gate, fault_line, fault_value):
             assigned[index] = False
 
         return False
-gates = [
-    {"type": 1, "input1": 0, "input2": 1, "output": 3},
-    {"type": 1, "input1": 2, "input2": 3, "output": 4},
-    {"type": 2, "input1": 1, "input2": 4, "output": 5}
-]
-fault_gate = 1
-fault_line = 'input1'
-fault_value = 1
+# gates = [
+#     {"type": 1, "input1": 0, "input2": 1, "output": 3},
+#     {"type": 1, "input1": 2, "input2": 3, "output": 4},
+#     {"type": 2, "input1": 1, "input2": 4, "output": 5}
+# ]
+# fault_gate = 2
+# fault_line = 'input2'
+# fault_value = 1
 # [0,0,None]
 
-# gates = [
-#     {"type": 1, "input1": 0, "input2": 1, "output": 2},
-#     {"type": 2, "input1": 0, "input2": 2, "output": 3}
-# ]
+gates = [
+    {"type": 1, "input1": 0, "input2": 1, "output": 2},
+    {"type": 2, "input1": 0, "input2": 2, "output": 3}
+]
 
-# fault_gate = 1
-# fault_line = 'input1'
-# fault_value = 1
+fault_gate = 1
+fault_line = 'input2'
+fault_value = 1
 
 podem(gates, fault_gate, fault_line, fault_value)
